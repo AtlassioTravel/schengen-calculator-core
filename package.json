@@ -1,0 +1,52 @@
+{
+  "name": "schengen-calculator-core",
+  "version": "1.0.0",
+  "description": "Zero-runtime-dependency Schengen 90/180-day calculation engine and CLI.",
+  "license": "MIT",
+  "type": "module",
+  "homepage": "https://atlassio.co.uk",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/atlassio/schengen-calculator-core.git"
+  },
+  "main": "./dist/cjs/index.cjs",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/esm/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.cts",
+        "default": "./dist/cjs/index.cjs"
+      }
+    }
+  },
+  "bin": {
+    "schengen-calc": "./dist/esm/cli.js"
+  },
+  "files": [
+    "dist",
+    "scripts",
+    "schema",
+    "action.yml",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.esm.json && tsc -p tsconfig.cjs.json && node scripts/build-cjs.mjs",
+    "prepack": "npm run build",
+    "test": "npm run build && node --test test/*.node.mjs",
+    "check": "npm test && npm run check:size",
+    "check:size": "node scripts/check-bundle-size.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "@types/node": "^24.12.2",
+    "typescript": "~6.0.2"
+  }
+}

@@ -1,0 +1,61 @@
+name: Schengen 90/180 trip check
+description: Check a trip ledger and optional future trip against the rolling 90/180-day rule.
+inputs:
+  trips-file:
+    description: Path to a JSON trip array or an object containing a trips array.
+    required: false
+    default: trips.json
+  reference-date:
+    description: Optional YYYY-MM-DD date to evaluate.
+    required: false
+  target-entry:
+    description: Optional planned trip entry date (provide with target-exit).
+    required: false
+  target-exit:
+    description: Optional planned trip exit date (provide with target-entry).
+    required: false
+  readme-file:
+    description: README file inside the caller workspace to update with the compliance badge.
+    required: false
+    default: README.md
+outputs:
+  days-used:
+    description: Schengen days used in the reference-date window.
+    value: ${{ steps.check.outputs.days-used }}
+  days-remaining:
+    description: Allowance remaining at the reference date.
+    value: ${{ steps.check.outputs.days-remaining }}
+  is-overstay:
+    description: Whether the current ledger exceeds the allowance.
+    value: ${{ steps.check.outputs.is-overstay }}
+  planned-trip-valid:
+    description: Whether the optional planned trip passes simulation.
+    value: ${{ steps.check.outputs.planned-trip-valid }}
+  first-overstay-date:
+    description: First overstay date found in the ledger or planned trip.
+    value: ${{ steps.check.outputs.first-overstay-date }}
+  max-stay-date:
+    description: Last valid day for the optional planned trip.
+    value: ${{ steps.check.outputs.max-stay-date }}
+  badge-status:
+    description: Text status rendered in the caller README's compliance badge.
+    value: ${{ steps.check.outputs.badge-status }}
+runs:
+  using: composite
+  steps:
+    - name: Install TypeScript compiler
+      shell: bash
+      run: npm install --prefix "$GITHUB_ACTION_PATH" --no-save --no-package-lock --ignore-scripts typescript@~6.0.2
+    - name: Build calculator
+      shell: bash
+      run: npm run --prefix "$GITHUB_ACTION_PATH" build
+    - name: Check trip ledger
+      id: check
+      shell: bash
+      env:
+        INPUT_TRIPS_FILE: ${{ inputs.trips-file }}
+        INPUT_REFERENCE_DATE: ${{ inputs.reference-date }}
+        INPUT_TARGET_ENTRY: ${{ inputs.target-entry }}
+        INPUT_TARGET_EXIT: ${{ inputs.target-exit }}
+        INPUT_README_FILE: ${{ inputs.readme-file }}
+      run: node "$GITHUB_ACTION_PATH/scripts/action.mjs"

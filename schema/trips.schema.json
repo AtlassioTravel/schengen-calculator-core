@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://atlassio.co.uk/schemas/trips.json",
+  "title": "Schengen calculator input",
+  "description": "Trips and optional future stay to evaluate with the Schengen 90/180-day calculator.",
+  "type": "object",
+  "required": ["trips"],
+  "properties": {
+    "trips": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/trip" }
+    },
+    "referenceDate": { "$ref": "#/$defs/date" },
+    "targetEntry": { "$ref": "#/$defs/date" },
+    "targetExit": { "$ref": "#/$defs/date" }
+  },
+  "allOf": [
+    {
+      "if": { "required": ["targetEntry"] },
+      "then": { "required": ["targetExit"] }
+    },
+    {
+      "if": { "required": ["targetExit"] },
+      "then": { "required": ["targetEntry"] }
+    }
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "date": {
+      "type": "string",
+      "format": "date",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+      "description": "Calendar date in YYYY-MM-DD format."
+    },
+    "trip": {
+      "type": "object",
+      "required": ["entryDate", "exitDate"],
+      "properties": {
+        "entryDate": { "$ref": "#/$defs/date" },
+        "exitDate": { "$ref": "#/$defs/date" },
+        "countryCode": {
+          "type": "string",
+          "pattern": "^[A-Za-z]{2}$",
+          "description": "ISO 3166-1 alpha-2 country code. Ireland and Cyprus are excluded."
+        },
+        "entryMode": {
+          "type": "string",
+          "enum": ["air", "sea", "land"],
+          "description": "Use for Bulgaria and Romania trips dated 2024-03-31 through 2024-12-31; omitted mode uses the full-accession date."
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
