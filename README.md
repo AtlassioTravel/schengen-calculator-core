@@ -1,5 +1,7 @@
 # schengen-calculator-core
 
+[![Download Atlassio Schengen Calculator](https://a.fsdn.com/con/app/sf-download-button)](https://sourceforge.net/projects/schengen-calculator-core/files/latest/download)
+
 Zero-runtime-dependency TypeScript engine and CLI for Schengen short-stay 90/180-day calculations.
 
 ## Install
